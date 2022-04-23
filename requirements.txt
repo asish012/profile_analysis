@@ -1,0 +1,8 @@
+notebook
+pandas
+numpy
+matplotlib
+bs4
+selenium
+tqdm
+scrapy

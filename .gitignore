@@ -1,0 +1,6 @@
+*.zip
+config.ini
+venv/*
+driver/*
+scraped_data/*
+*.txt
