@@ -3,4 +3,5 @@ config.ini
 venv/*
 driver/*
 scraped_data/*
+profile_html/*
 *.txt

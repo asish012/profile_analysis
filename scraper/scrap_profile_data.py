@@ -54,7 +54,7 @@ def extract_experiences(experience_tags):
                 # experience_list.append((job_title, *[c.strip() for c in company.split('·')][::-1], duration.split('·')[-1].strip()))
                 experience_list.append(
                     {
-                        "job_title": job_title,
+                        "job_title": job_title.strip(),
                         "company": company.split('·')[0].strip() if '·' in company else company,
                         "job_type": company.split('·')[1].strip() if '·' in company else None,
                         "job_duration": duration.split('·')[-1].strip()
@@ -113,12 +113,16 @@ def extract_achievements(head_section, category):
 
 if __name__ == "__main__":
     profile_data = {}
+    df_profile = pd.DataFrame()
+    df_experience = pd.DataFrame()
+    df_education = pd.DataFrame()
+    df_certification = pd.DataFrame()
+    df_courses = pd.DataFrame()
 
-    for profile in os.listdir("../scraped_data/"):
-        profile_data[profile] = {}
-
-        profile_url = f"../scraped_data/{profile}"
-        # profile_url = f"../scraped_data/profile_100.html"
+    for profile in os.listdir("../profile_html/"):
+        profile = profile.split('.')[0]
+        profile_url = f"../profile_html/{profile}.html"
+        # profile_url = f"../profile_html/profile_100.html"
 
         with open(profile_url, 'r', encoding="utf-8") as f:
             soup = BeautifulSoup(f, features="lxml")
@@ -127,9 +131,12 @@ if __name__ == "__main__":
         # Extract basic info
         profile_card = soup.find_all("section", {"class": "artdeco-card ember-view pv-top-card"})[0]
 
-        profile_data[profile]["name"] = profile_card.find("div", class_="pv-text-details__left-panel").div.h1.string.strip()
-        profile_data[profile]["location"] = profile_card.find("div", class_="pb2 pv-text-details__left-panel").span.string.strip()
-        profile_data[profile]["designation"] = profile_card.find("div", class_="text-body-medium break-words").string.strip()
+        name = profile_card.find("div", class_="pv-text-details__left-panel").div.h1.string.strip()
+        location = profile_card.find("div", class_="pb2 pv-text-details__left-panel").span.string.strip()
+        designation = profile_card.find("div", class_="text-body-medium break-words").string.strip()
+
+        df = pd.DataFrame({"profile": profile, "name": name, "location": location, "designation": designation}, index=[0])
+        df_profile = pd.concat([df_profile, df], ignore_index=True, axis=0)
 
 
         # Extract experience and other achievements
@@ -141,25 +148,37 @@ if __name__ == "__main__":
                 # print("found experience")
                 experiences = section.find_all("a", {"data-field": "experience_company_logo"})
                 if len(experiences):
-                    profile_data[profile]["experiences"] = extract_experiences(experiences)
+                    experiences_json = extract_experiences(experiences)
+                    df = pd.DataFrame(data=experiences_json)
+                    df['profile'] = profile
+                    df_experience = pd.concat([df_experience, df], ignore_index=True, axis=0)
 
             # Extract educations
             if section.div["id"] == "education":
                 # print("found education")
-                profile_data[profile]["educations"] = extract_achievements(section, "education")
+                educations_json = extract_achievements(section, "education")
+                df = pd.DataFrame(data=educations_json)
+                df['profile'] = profile
+                df_education = pd.concat([df_education, df], ignore_index=True, axis=0)
 
             if section.div["id"] == "licenses_and_certifications":
                 # print("found certifications")
-                profile_data[profile]["certifications"] = extract_achievements(section, "certification")
+                certifications_json = extract_achievements(section, "certification")
+                df = pd.DataFrame(data=certifications_json)
+                df['profile'] = profile
+                df_certification = pd.concat([df_certification, df], ignore_index=True, axis=0)
 
             elif section.div["id"] == "courses":
                 # print("found courses")
-                profile_data[profile]["courses"] = extract_achievements(section, "courses")
+                courses_json = extract_achievements(section, "courses")
+                df = pd.DataFrame(data=courses_json)
+                df['profile'] = profile
+                df_courses = pd.concat([df_courses, df], ignore_index=True, axis=0)
 
         # break
-
-
-    with open("profile_data.json", "w", encoding="utf-8") as f:
-        print(f"writing {len(profile_data)} profiles to disk")
-        f.write(json.dumps(profile_data))
-    # print(json.dumps(profile_data))
+    print("Writing dataframes to csv")
+    df_profile.to_csv("../scraped_data/profile.csv")
+    df_experience.to_csv("../scraped_data/experience.csv")
+    df_education.to_csv("../scraped_data/education.csv")
+    df_certification.to_csv("../scraped_data/certification.csv")
+    df_courses.to_csv("../scraped_data/courses.csv")
