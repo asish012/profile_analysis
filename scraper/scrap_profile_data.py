@@ -12,6 +12,7 @@ def extract_experiences(experience_tags):
     r_expression = r"(?<=-\>)[0-9,;.\w\s&·-]+"
     experience_list = []
 
+    order = 1
     for exp_tag in experience_tags:
         experience_div = exp_tag.parent.parent
         experience_div = [*experience_div.children][3]
@@ -35,7 +36,8 @@ def extract_experiences(experience_tags):
                         "job_title": job_title,
                         "company": company,
                         "job_type": job_type.split('·')[0].strip() if '·' in job_type else None,
-                        "job_duration": job_type.split('·')[1].strip() if '·' in job_type else job_type
+                        "job_duration": job_type.split('·')[1].strip() if '·' in job_type else job_type,
+                        "order": order
                     }
                 )
         except Exception as e:
@@ -57,12 +59,14 @@ def extract_experiences(experience_tags):
                         "job_title": job_title.strip(),
                         "company": company.split('·')[0].strip() if '·' in company else company,
                         "job_type": company.split('·')[1].strip() if '·' in company else None,
-                        "job_duration": duration.split('·')[-1].strip()
+                        "job_duration": duration.split('·')[-1].strip(),
+                        "order": order
                     }
                 )
         except Exception as e:
             pass
             # print(e)
+        order += 1
 
     return experience_list
 
@@ -78,6 +82,7 @@ def extract_achievements(head_section, category):
     # if category == "education" or category == "certification":
     achievement_tags = head_section.find_all("a", class_="optional-action-target-wrapper display-flex flex-column full-width")
     achievement_tags += head_section.find_all("div", class_="display-flex flex-column full-width")
+    order = 1
     for tag in achievement_tags:
         institute = tag.div.span.span
         title = tag.find("span", class_="t-14 t-normal")
@@ -92,7 +97,8 @@ def extract_achievements(head_section, category):
             achievement_list.append(
                 {
                     "title": title,
-                    "institute": institute
+                    "institute": institute,
+                    "order": order
                 }
             )
         else:
@@ -100,9 +106,11 @@ def extract_achievements(head_section, category):
             achievement_list.append(
                 {
                     "title": institute,
-                    "institute": title
+                    "institute": title,
+                    "order": order
                 }
             )
+        order += 1
 
     return achievement_list
 
@@ -177,8 +185,8 @@ if __name__ == "__main__":
 
         # break
     print("Writing dataframes to csv")
-    df_profile.to_csv("../scraped_data/profile.csv")
-    df_experience.to_csv("../scraped_data/experience.csv")
-    df_education.to_csv("../scraped_data/education.csv")
-    df_certification.to_csv("../scraped_data/certification.csv")
-    df_courses.to_csv("../scraped_data/courses.csv")
+    df_profile.to_csv("../scraped_data/profile.csv", index=False)
+    df_experience.to_csv("../scraped_data/experience.csv", index=False)
+    df_education.to_csv("../scraped_data/education.csv", index=False)
+    df_certification.to_csv("../scraped_data/certification.csv", index=False)
+    df_courses.to_csv("../scraped_data/courses.csv", index=False)
