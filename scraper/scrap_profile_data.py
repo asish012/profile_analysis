@@ -154,7 +154,7 @@ if __name__ == "__main__":
             # Extract experiences
             if section.div["id"] == "experience":
                 # print("found experience")
-                experiences = section.find_all("a", {"data-field": "experience_company_logo"})
+                experiences = section.find_all("a", {"data-field": "experience_company_logo", "class": "optional-action-target-wrapper display-flex"})
                 if len(experiences):
                     experiences_json = extract_experiences(experiences)
                     df = pd.DataFrame(data=experiences_json)
