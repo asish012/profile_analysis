@@ -3,13 +3,14 @@ from bs4 import BeautifulSoup
 import os, time, random, json, re
 
 
+r_expression = r"(?<=-\>)[\/’`',;.&%\d\w\s·-]+"
+
 ##################################
 # Extract experiences
 ##################################
 
 def extract_experiences(experience_tags):
     # r_expression = r'(?<=-\>)[0-9a-zA-Z ·-]+'
-    r_expression = r"(?<=-\>)[0-9,;.\w\s&·-]+"
     experience_list = []
 
     order = 1
@@ -76,7 +77,6 @@ def extract_experiences(experience_tags):
 ##################################
 
 def extract_achievements(head_section, category):
-    r_expression = r"(?<=-\>)[0-9,;.\w\s&·-]+"
     achievement_list = []
 
     # if category == "education" or category == "certification":
