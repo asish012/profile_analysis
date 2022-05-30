@@ -21,5 +21,3 @@ education_map = {
     "Master of Business Administration"     : "MBA",
     "Bachelor of Business Administration"   : "BBA"
 }
-
-&amp;                       &

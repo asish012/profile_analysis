@@ -17,7 +17,7 @@ password = config['DEFAULT']['password']
 output_file = "profile_urls_analyst.txt"
 search_key = "data scientist"
 
-driver = Chrome("C:/Users/cn4tvne/Documents/workspace/linkedin-analytics/driver/chromedriver.exe")
+driver = Chrome("../driver/chromedriver.exe")
 driver.get("https://www.linkedin.com/login")
 
 

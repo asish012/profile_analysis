@@ -20,7 +20,7 @@ def get_element(selector_type=By.CSS_SELECTOR, css_tag=""):
     return WebDriverWait(driver, 10).until(EC.element_to_be_clickable((selector_type, css_tag)))
 
 
-driver = Chrome("C:/Users/cn4tvne/Documents/workspace/linkedin-analytics/driver/chromedriver.exe")
+driver = Chrome("../driver/chromedriver.exe")
 driver.get("https://www.linkedin.com/login")
 
 username = get_element(By.CSS_SELECTOR, "input[name='session_key']")
