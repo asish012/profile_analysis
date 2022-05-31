@@ -139,11 +139,12 @@ if __name__ == "__main__":
         # Extract basic info
         profile_card = soup.find_all("section", {"class": "artdeco-card ember-view pv-top-card"})[0]
 
-        name = profile_card.find("div", class_="pv-text-details__left-panel").div.h1.string.strip()
+        # name = profile_card.find("div", class_="pv-text-details__left-panel").div.h1.string.strip()
         location = profile_card.find("div", class_="pb2 pv-text-details__left-panel").span.string.strip()
         designation = profile_card.find("div", class_="text-body-medium break-words").string.strip()
 
-        df = pd.DataFrame({"profile": profile, "name": name, "location": location, "designation": designation}, index=[0])
+        # df = pd.DataFrame({"profile": profile, "name": name, "location": location, "designation": designation}, index=[0])
+        df = pd.DataFrame({"profile": profile, "location": location, "designation": designation}, index=[0])
         df_profile = pd.concat([df_profile, df], ignore_index=True, axis=0)
 
 
