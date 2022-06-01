@@ -128,8 +128,7 @@ if __name__ == "__main__":
     df_courses = pd.DataFrame()
 
     for profile in os.listdir("../profile_html/"):
-        profile = profile.split('.')[0]
-        profile_url = f"../profile_html/{profile}.html"
+        profile_url = f"../profile_html/{profile}"
         # profile_url = f"../profile_html/profile_100.html"
 
         with open(profile_url, 'r', encoding="utf-8") as f:
