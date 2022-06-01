@@ -1,10 +1,14 @@
 
-## Step -1: Python environment setup with venv
+## Step -1: Environment setup
 ```bash
 python3 -m venv venv
 source venv/Scripts/activate
 pip install -r .\requirements.txt
+
+mkdir driver profile_html scraped_data clean_data
 ```
+
+Download the Selenium Chrome webdriver from [here](https://chromedriver.chromium.org/downloads) and store it to the *"driver"* folder.
 
 ## Step 0: Store LinkedIn authentication in a config file
 - Rename "sample.ini" to "config.ini"
