@@ -26,3 +26,6 @@ python3 scrap_profile_data.py
 
 ## Step 3: Data preparation
 For data cleaning and preparation I used the "data-preparation.ipynb" jupyter notebook.
+
+## Step 4: Data Visualization
+You can find the Tableau workbook [here](https://medium.com/r/?url=https%3A%2F%2Fpublic.tableau.com%2Fviews%2FLinkedInProfileAnalysis_16541209594500%2FDashboard%3F%3Alanguage%3Den-US%26%3Adisplay_count%3Dn%26%3Aorigin%3Dviz_share_link)
