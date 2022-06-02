@@ -1,3 +1,4 @@
+Accompanying [blog post](https://medium.com/@analyticsoul/eb0e968b00c1)
 
 ## Step -1: Environment setup
 ```bash
