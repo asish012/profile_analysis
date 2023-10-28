@@ -111,15 +111,14 @@ if __name__ == "__main__":
 
         company_name = experiences.find("span", {"class":"visually-hidden"})
         print(company_name)
-        break
-        # for company in experiences:
-        #     if company.ul is not None:
-        #         experiences = company.find_all("ul", {"class": "pvs-list"})
-        #         if len(experiences):
-        #             experiences_json = extract_experiences(experiences)
-        #             df = pd.DataFrame(data=experiences_json)
-        #             df['profile'] = profile
-        #             df_experience = pd.concat([df_experience, df], ignore_index=True, axis=0)
+        for company in experiences:
+            if company.ul is not None:
+                experiences = company.find_all("ul", {"class": "pvs-list"})
+                if len(experiences):
+                    experiences_json = extract_experiences(experiences)
+                    df = pd.DataFrame(data=experiences_json)
+                    df['profile'] = profile
+                    df_experience = pd.concat([df_experience, df], ignore_index=True, axis=0)
 
 
         # break
