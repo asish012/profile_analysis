@@ -6,3 +6,4 @@ bs4
 selenium
 tqdm
 scrapy
+webdriver_manager

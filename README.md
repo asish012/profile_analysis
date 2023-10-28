@@ -6,7 +6,7 @@ python3 -m venv venv
 source venv/Scripts/activate
 pip install -r .\requirements.txt
 
-mkdir driver profile_html scraped_data clean_data
+mkdir driver profile_html raw_data clean_data
 ```
 
 Download the Selenium Chrome webdriver from [here](https://chromedriver.chromium.org/downloads) and store it to the *"driver"* folder.

@@ -139,27 +139,28 @@ if __name__ == "__main__":
         profile_card = soup.find_all("section", {"class": "artdeco-card ember-view pv-top-card"})[0]
 
         # name = profile_card.find("div", class_="pv-text-details__left-panel").div.h1.string.strip()
-        location = profile_card.find("div", class_="pb2 pv-text-details__left-panel").span.string.strip()
+        # location = profile_card.find("div", class_="pb2 pv-text-details__left-panel").span.string.strip()
         designation = profile_card.find("div", class_="text-body-medium break-words").string.strip()
 
         # df = pd.DataFrame({"profile": profile, "name": name, "location": location, "designation": designation}, index=[0])
-        df = pd.DataFrame({"profile": profile, "location": location, "designation": designation}, index=[0])
+        df = pd.DataFrame({"profile": profile, "designation": designation}, index=[0])
         df_profile = pd.concat([df_profile, df], ignore_index=True, axis=0)
 
 
         # Extract experience and other achievements
-        sections = soup.find_all("section", {"class": "artdeco-card ember-view break-words pb3 mt4"})
+        # sections = soup.find_all("section", {"class": "artdeco-card ember-view break-words pb3 mt4"})
+        sections = soup.find_all("section", {"data-view-name":"profile-card"})
 
         for section in sections:
             # Extract experiences
-            if section.div["id"] == "experience":
-                # print("found experience")
-                experiences = section.find_all("a", {"data-field": "experience_company_logo", "class": "optional-action-target-wrapper display-flex"})
-                if len(experiences):
-                    experiences_json = extract_experiences(experiences)
-                    df = pd.DataFrame(data=experiences_json)
-                    df['profile'] = profile
-                    df_experience = pd.concat([df_experience, df], ignore_index=True, axis=0)
+            # if section.div["id"] == "experience":
+            #     # print("found experience")
+            #     experiences = section.find_all("ul", {"class": "pvs-list"})
+            #     if len(experiences):
+            #         experiences_json = extract_experiences(experiences)
+            #         df = pd.DataFrame(data=experiences_json)
+            #         df['profile'] = profile
+            #         df_experience = pd.concat([df_experience, df], ignore_index=True, axis=0)
 
             # Extract educations
             if section.div["id"] == "education":
@@ -185,8 +186,8 @@ if __name__ == "__main__":
 
         # break
     print("Writing dataframes to csv")
-    df_profile.to_csv("../scraped_data/profile.csv", index=False)
-    df_experience.to_csv("../scraped_data/experience.csv", index=False)
-    df_education.to_csv("../scraped_data/education.csv", index=False)
-    df_certification.to_csv("../scraped_data/certification.csv", index=False)
-    df_courses.to_csv("../scraped_data/courses.csv", index=False)
+    df_profile.to_csv("../raw_data/profile.csv", index=False)
+    df_experience.to_csv("../raw_data/experience.csv", index=False)
+    df_education.to_csv("../raw_data/education.csv", index=False)
+    df_certification.to_csv("../raw_data/certification.csv", index=False)
+    df_courses.to_csv("../raw_data/courses.csv", index=False)
