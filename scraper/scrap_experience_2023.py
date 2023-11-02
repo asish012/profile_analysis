@@ -9,25 +9,26 @@ r_expression = r"(?<=-\>)[\/’`',;.&%\d\w\s·-]+"
 # Extract experiences
 ##################################
 
-def extract_experiences(experience_tags):
+def extract_experiences(experiences_li):
+    print('len experiences', len(experiences_li))
     # r_expression = r'(?<=-\>)[0-9a-zA-Z ·-]+'
     experience_list = []
 
     order = 1
-    for exp_tag in experience_tags:
-        experience_div = exp_tag.parent.parent
-        experience_div = [*experience_div.children][3]
+    for exp in experiences_li:
+        # experience_div = exp_tag.parent.parent
+        # experience_div = [*experience_div.children][3]
 
-        try:
-            if experience_div.div.a is not None:
-                # Multiple job position within same company
-                multi_job = experience_div.find_all("div", class_="display-flex align-items-center") #.span.span
-                company = multi_job[0].span.span
-                job_title = multi_job[1].span.span
-                job_type = experience_div.find("span", class_="t-14 t-normal").span
+        if len(exp.div.div.find_all('div', {'class':'display-flex flex-column full-width align-self-center'})) > 1:
+            # Multiple job position within same company
+            multi_job = exp.div.div.find_all("a")
+            company = multi_job[1].span
+            company = re.search(r_expression, str(company)).group(0)
+            for job in multi_job[2:]:
+                job_title = job.span
+                job_type = exp.find("span", class_="t-14 t-normal").span
 
                 job_title = re.search(r_expression, str(job_title)).group(0)
-                company = re.search(r_expression, str(company)).group(0)
                 job_type = re.search(r_expression, str(job_type)).group(0)
                 job_type = job_type.split('·')[0] if '·' in job_type else job_type
 
@@ -41,32 +42,26 @@ def extract_experiences(experience_tags):
                         "order": order
                     }
                 )
-        except Exception as e:
-            pass
-            # print(e)
-        try:
-            if experience_div.div.div.div is not None:
-                job_title = experience_div.find("div", class_="display-flex align-items-center").span.span
-                company = experience_div.find("span", class_="t-14 t-normal").span
-                duration = experience_div.find("span", class_="t-14 t-normal t-black--light").span
+                print(experience_list[-1])
+        else:
+            job_title = exp.find("div", class_="display-flex align-items-center").span.span
+            company = exp.find("span", class_="t-14 t-normal").span
+            duration = exp.find("span", class_="t-14 t-normal t-black--light").span
 
-                job_title = re.search(r_expression, str(job_title)).group(0)
-                company = re.search(r_expression, str(company)).group(0)
-                duration = re.search(r_expression, str(duration)).group(0)
+            job_title = re.search(r_expression, str(job_title)).group(0)
+            company = re.search(r_expression, str(company)).group(0)
+            duration = re.search(r_expression, str(duration)).group(0)
 
-                # experience_list.append((job_title, *[c.strip() for c in company.split('·')][::-1], duration.split('·')[-1].strip()))
-                experience_list.append(
-                    {
-                        "job_title": job_title.strip(),
-                        "company": company.split('·')[0].strip() if '·' in company else company,
-                        "job_type": company.split('·')[1].strip() if '·' in company else None,
-                        "job_duration": duration.split('·')[-1].strip(),
-                        "order": order
-                    }
-                )
-        except Exception as e:
-            pass
-            # print(e)
+            # experience_list.append((job_title, *[c.strip() for c in company.split('·')][::-1], duration.split('·')[-1].strip()))
+            experience_list.append(
+                {
+                    "job_title": job_title.strip(),
+                    "company": company.split('·')[0].strip() if '·' in company else company,
+                    "job_type": company.split('·')[1].strip() if '·' in company else None,
+                    "job_duration": duration.split('·')[-1].strip(),
+                    "order": order
+                }
+            )
         order += 1
 
     return experience_list
@@ -86,6 +81,7 @@ if __name__ == "__main__":
 
     for profile in os.listdir("../profile_html/"):
         profile_url = f"../profile_html/{profile}"
+        print(profile)
 
         if "experience" not in profile_url:
             continue
@@ -107,18 +103,27 @@ if __name__ == "__main__":
 
 
         # Extract experience and other achievements
-        experiences = soup.find("div", {"data-view-name":"profile-component-entity"})
+                        # experiences = soup.find("div", {"data-view-name":"profile-component-entity"})
 
-        company_name = experiences.find("span", {"class":"visually-hidden"})
-        print(company_name)
-        for company in experiences:
-            if company.ul is not None:
-                experiences = company.find_all("ul", {"class": "pvs-list"})
-                if len(experiences):
-                    experiences_json = extract_experiences(experiences)
-                    df = pd.DataFrame(data=experiences_json)
-                    df['profile'] = profile
-                    df_experience = pd.concat([df_experience, df], ignore_index=True, axis=0)
+                        # company_name = experiences.find("span", {"class":"visually-hidden"})
+                        # print(company_name.text)
+                        # for company in experiences:
+                        #     if company.ul is not None:
+                        #         experiences = company.find_all("ul", {"class": "pvs-list"})
+                        #         if len(experiences):
+                        #             experiences_json = extract_experiences(experiences)
+                        #             df = pd.DataFrame(data=experiences_json)
+                        #             df['profile'] = profile
+                        #             df_experience = pd.concat([df_experience, df], ignore_index=True, axis=0)
+                        
+        experiences = soup.find("ul", {"class":"pvs-list"})
+        experiences = experiences.find_all("li", recursive=False)
+        if len(experiences):
+            for exp in experiences:
+                experiences_json = extract_experiences(experiences)
+                df = pd.DataFrame(data=experiences_json)
+                df['profile'] = profile
+                df_experience = pd.concat([df_experience, df], ignore_index=True, axis=0)
 
 
         # break
