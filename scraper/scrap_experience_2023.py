@@ -10,11 +10,10 @@ r_expression = r"(?<=-\>)[\/’`',;.&%\d\w\s·-]+"
 ##################################
 
 def extract_experiences(experiences_li):
-    print('len experiences', len(experiences_li))
     # r_expression = r'(?<=-\>)[0-9a-zA-Z ·-]+'
     experience_list = []
 
-    order = 1
+    order_level_1 = 1
     for exp in experiences_li:
         # experience_div = exp_tag.parent.parent
         # experience_div = [*experience_div.children][3]
@@ -22,8 +21,9 @@ def extract_experiences(experiences_li):
         if len(exp.div.div.find_all('div', {'class':'display-flex flex-column full-width align-self-center'})) > 1:
             # Multiple job position within same company
             multi_job = exp.div.div.find_all("a")
-            company = multi_job[1].span
-            company = re.search(r_expression, str(company)).group(0)
+            company = multi_job[1].find_all('span', {'aria-hidden':'true'})[0].text
+            # company = re.search(r_expression, str(company)).group(0)
+            order_level_2 = 1
             for job in multi_job[2:]:
                 job_title = job.span
                 job_type = exp.find("span", class_="t-14 t-normal").span
@@ -39,14 +39,16 @@ def extract_experiences(experiences_li):
                         "company": company,
                         "job_type": job_type.split('·')[0].strip() if '·' in job_type else None,
                         "job_duration": job_type.split('·')[1].strip() if '·' in job_type else job_type,
-                        "order": order
+                        "order": f"{order_level_1}.{order_level_2}"
                     }
                 )
-                print(experience_list[-1])
+                # print(experience_list[-1])
+            order_level_2 += 1
         else:
-            job_title = exp.find("div", class_="display-flex align-items-center").span.span
-            company = exp.find("span", class_="t-14 t-normal").span
-            duration = exp.find("span", class_="t-14 t-normal t-black--light").span
+            job_details = exp.find_all('span', {'aria-hidden':'true'})
+            job_title = job_details[0]
+            company = job_details[1]
+            duration = job_details[2]
 
             job_title = re.search(r_expression, str(job_title)).group(0)
             company = re.search(r_expression, str(company)).group(0)
@@ -59,10 +61,11 @@ def extract_experiences(experiences_li):
                     "company": company.split('·')[0].strip() if '·' in company else company,
                     "job_type": company.split('·')[1].strip() if '·' in company else None,
                     "job_duration": duration.split('·')[-1].strip(),
-                    "order": order
+                    "order": order_level_1
                 }
             )
-        order += 1
+            # print(experience_list[-1])
+        order_level_1 += 1
 
     return experience_list
 
@@ -81,14 +84,12 @@ if __name__ == "__main__":
 
     for profile in os.listdir("../profile_html/"):
         profile_url = f"../profile_html/{profile}"
-        print(profile)
 
         if "experience" not in profile_url:
             continue
 
         with open(profile_url, 'r', encoding="utf-8") as f:
             soup = BeautifulSoup(f, features="lxml")
-
 
         # Extract basic info
         # profile_card = soup.find_all("section", {"class": "artdeco-card ember-view pv-top-card"})[0]
@@ -103,19 +104,6 @@ if __name__ == "__main__":
 
 
         # Extract experience and other achievements
-                        # experiences = soup.find("div", {"data-view-name":"profile-component-entity"})
-
-                        # company_name = experiences.find("span", {"class":"visually-hidden"})
-                        # print(company_name.text)
-                        # for company in experiences:
-                        #     if company.ul is not None:
-                        #         experiences = company.find_all("ul", {"class": "pvs-list"})
-                        #         if len(experiences):
-                        #             experiences_json = extract_experiences(experiences)
-                        #             df = pd.DataFrame(data=experiences_json)
-                        #             df['profile'] = profile
-                        #             df_experience = pd.concat([df_experience, df], ignore_index=True, axis=0)
-                        
         experiences = soup.find("ul", {"class":"pvs-list"})
         experiences = experiences.find_all("li", recursive=False)
         if len(experiences):
@@ -125,11 +113,11 @@ if __name__ == "__main__":
                 df['profile'] = profile
                 df_experience = pd.concat([df_experience, df], ignore_index=True, axis=0)
 
+    df_experience.drop_duplicates(inplace=True)
 
-        # break
-    # print("Writing dataframes to csv")
+    print("Writing dataframes to csv")
     # df_profile.to_csv("../raw_data/profile.csv", index=False)
-    # df_experience.to_csv("../raw_data/experience.csv", index=False)
+    df_experience.to_csv("../raw_data/experience.csv", index=False)
     # df_education.to_csv("../raw_data/education.csv", index=False)
     # df_certification.to_csv("../raw_data/certification.csv", index=False)
     # df_courses.to_csv("../raw_data/courses.csv", index=False)
