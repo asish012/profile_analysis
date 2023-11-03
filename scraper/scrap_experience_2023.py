@@ -43,7 +43,7 @@ def extract_experiences(experiences_li):
                     }
                 )
                 # print(experience_list[-1])
-            order_level_2 += 1
+                order_level_2 += 1
         else:
             job_details = exp.find_all('span', {'aria-hidden':'true'})
             job_title = job_details[0]
