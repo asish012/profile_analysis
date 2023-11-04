@@ -26,11 +26,10 @@ def extract_experiences(experiences_li):
             order_level_2 = 1
             for job in multi_job[2:]:
                 job_title = job.span
-                job_type = exp.find("span", class_="t-14 t-normal").span
+                job_type = job.find("span", class_="t-14 t-normal t-black--light").span
 
                 job_title = re.search(r_expression, str(job_title)).group(0)
                 job_type = re.search(r_expression, str(job_type)).group(0)
-                job_type = job_type.split('·')[0] if '·' in job_type else job_type
 
                 # experience_list.append((job_title, company, *[c.strip() for c in job_type.split('·')][::-1]))
                 experience_list.append(
