@@ -36,8 +36,8 @@ def extract_experiences(experiences_li):
                     {
                         "job_title": job_title,
                         "company": company,
-                        "job_type": job_type.split('·')[0].strip() if '·' in job_type else None,
-                        "job_duration": job_type.split('·')[1].strip() if '·' in job_type else job_type,
+                        "job_type": job_type.split('·')[0].strip() if '·' in job_type else job_type,
+                        "job_duration": job_type.split('·')[1].strip() if '·' in job_type else None,
                         "order": f"{order_level_1}.{order_level_2}"
                     }
                 )
@@ -58,8 +58,8 @@ def extract_experiences(experiences_li):
                 {
                     "job_title": job_title.strip(),
                     "company": company.split('·')[0].strip() if '·' in company else company,
-                    "job_type": company.split('·')[1].strip() if '·' in company else None,
-                    "job_duration": duration.split('·')[-1].strip(),
+                    "job_type": duration.split('·')[0].strip() if '·' in duration else duration,
+                    "job_duration": duration.split('·')[-1].strip() if '·' in duration else None,
                     "order": order_level_1
                 }
             )
